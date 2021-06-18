@@ -1,0 +1,6 @@
+resolver: lts-18.0
+packages:
+- .
+extra-deps:
+- git: https://github.com/telostat/haspara.git
+  commit: 31e55a582342f486e644a20bb92a28609a1c2d09
