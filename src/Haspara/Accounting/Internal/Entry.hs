@@ -12,29 +12,34 @@ import           Refined                                 (unrefine)
 
 
 data Entry o (s :: Nat) =
-    EntryDebit o (PositiveQuantity s)
-  | EntryCredit o (PositiveQuantity s)
+    EntryDebit H.Date o (PositiveQuantity s)
+  | EntryCredit H.Date o (PositiveQuantity s)
   deriving (Eq, Ord, Show)
 
 
+entryDate :: KnownNat s => Entry o s -> H.Date
+entryDate (EntryDebit d _ _)  = d
+entryDate (EntryCredit d _ _) = d
+
+
 entryQuantity :: KnownNat s => Entry o s -> H.Quantity s
-entryQuantity (EntryDebit _ q)  = unrefine q
-entryQuantity (EntryCredit _ q) = -(unrefine q)
+entryQuantity (EntryDebit _ _ q)  = unrefine q
+entryQuantity (EntryCredit _ _ q) = -(unrefine q)
 
 
 entryObject :: KnownNat s => Entry o s -> o
-entryObject (EntryDebit o _ ) = o
-entryObject (EntryCredit o _) = o
+entryObject (EntryDebit _ o _)  = o
+entryObject (EntryCredit _ o _) = o
 
 
 entryDebit :: KnownNat s => Entry o s -> Maybe (PositiveQuantity s)
-entryDebit (EntryDebit _ x)  = Just x
-entryDebit (EntryCredit _ _) = Nothing
+entryDebit (EntryDebit _ _ x) = Just x
+entryDebit EntryCredit {}     = Nothing
 
 
 entryCredit :: KnownNat s => Entry o s -> Maybe (PositiveQuantity s)
-entryCredit (EntryDebit _ _)  = Nothing
-entryCredit (EntryCredit _ x) = Just x
+entryCredit EntryDebit {}       = Nothing
+entryCredit (EntryCredit _ _ x) = Just x
 
 
 -- |
@@ -54,13 +59,13 @@ entryCredit (EntryCredit _ x) = Just x
 -- +-----------------------+----------+----------+
 --
 buildEntry :: (KnownNat s) => Event o s -> AccountKind -> Entry o s
-buildEntry (EventDecrement o x) AccountKindAsset     = EntryCredit o x
-buildEntry (EventIncrement o x) AccountKindAsset     = EntryDebit  o x
-buildEntry (EventDecrement o x) AccountKindLiability = EntryDebit  o x
-buildEntry (EventIncrement o x) AccountKindLiability = EntryCredit o x
-buildEntry (EventDecrement o x) AccountKindEquity    = EntryDebit  o x
-buildEntry (EventIncrement o x) AccountKindEquity    = EntryCredit o x
-buildEntry (EventDecrement o x) AccountKindRevenue   = EntryDebit  o x
-buildEntry (EventIncrement o x) AccountKindRevenue   = EntryCredit o x
-buildEntry (EventDecrement o x) AccountKindExpense   = EntryCredit o x
-buildEntry (EventIncrement o x) AccountKindExpense   = EntryDebit  o x
+buildEntry (EventDecrement d o x) AccountKindAsset     = EntryCredit d o x
+buildEntry (EventIncrement d o x) AccountKindAsset     = EntryDebit  d o x
+buildEntry (EventDecrement d o x) AccountKindLiability = EntryDebit  d o x
+buildEntry (EventIncrement d o x) AccountKindLiability = EntryCredit d o x
+buildEntry (EventDecrement d o x) AccountKindEquity    = EntryDebit  d o x
+buildEntry (EventIncrement d o x) AccountKindEquity    = EntryCredit d o x
+buildEntry (EventDecrement d o x) AccountKindRevenue   = EntryDebit  d o x
+buildEntry (EventIncrement d o x) AccountKindRevenue   = EntryCredit d o x
+buildEntry (EventDecrement d o x) AccountKindExpense   = EntryCredit d o x
+buildEntry (EventIncrement d o x) AccountKindExpense   = EntryDebit  d o x
