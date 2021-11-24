@@ -1,9 +1,13 @@
 {-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE DeriveGeneric    #-}
+{-# LANGUAGE DerivingVia      #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE KindSignatures   #-}
 
 module Haspara.Accounting.Internal.Ledger where
 
+import Deriving.Aeson                      (CustomJSON(CustomJSON), FromJSON, Generic, ToJSON)
+import Deriving.Aeson.Stock                (PrefixedSnake)
 import GHC.TypeLits                        (KnownNat, Nat)
 import Haspara                             (Quantity)
 import Haspara.Accounting.Internal.Account (Account)
@@ -15,13 +19,17 @@ data Ledger a o (s :: Nat) = Ledger
   , ledgerOpening :: !(Quantity s)
   , ledgerClosing :: !(Quantity s)
   , ledgerRunning :: ![LedgerItem o s]
-  } deriving (Eq, Ord, Show)
+  } deriving (Eq, Generic, Ord, Show)
+  deriving (FromJSON, ToJSON)
+  via PrefixedSnake "ledger" (Ledger a o s)
 
 
 data LedgerItem o (s :: Nat) = LedgerItem
   { ledgerItemEntry   :: !(Entry o s)
   , ledgerItemBalance :: !(Quantity s)
-  } deriving (Eq, Ord, Show)
+  } deriving (Eq, Generic, Ord, Show)
+  deriving (FromJSON, ToJSON)
+  via PrefixedSnake "ledgerItem" (LedgerItem o s)
 
 
 mkLedger :: KnownNat s => Account a -> Quantity s -> [Entry o s] -> Ledger a o s

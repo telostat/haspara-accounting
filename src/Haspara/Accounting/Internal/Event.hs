@@ -5,16 +5,54 @@
 module Haspara.Accounting.Internal.Event where
 
 import           Control.Monad.Except              (MonadError(throwError))
+import           Data.Aeson                        ((.:), (.=))
+import qualified Data.Aeson                        as Aeson
+import qualified Data.Char                         as C
+import qualified Data.Text                         as T
 import           GHC.TypeLits                      (KnownNat, Nat)
 import qualified Haspara                           as H
 import           Haspara.Accounting.Internal.Types (PositiveQuantity)
 import           Refined                           (refine)
 
 
+-- | Encoding of an increment/decrement event.
+--
+-- >>> :set -XDataKinds
+-- >>> import Refined
+-- >>> let date = read "2021-01-01"
+-- >>> let oid = 1 :: Int
+-- >>> let qty = $$(refineTH 42) :: PositiveQuantity 2
+-- >>> let event = EventDecrement date oid qty
+-- >>> let json = Aeson.encode event
+-- >>> json
+-- "{\"qty\":42.0,\"obj\":1,\"date\":\"2021-01-01\",\"type\":\"DECREMENT\"}"
+-- >>> Aeson.decode json :: Maybe (Event Int 2)
+-- Just (EventDecrement 2021-01-01 1 (Refined 42.00))
+-- >>> Aeson.decode json == Just event
+-- True
 data Event o (s :: Nat) =
     EventDecrement H.Date o (PositiveQuantity s)
   | EventIncrement H.Date o (PositiveQuantity s)
   deriving (Eq, Ord, Show)
+
+
+instance (Aeson.FromJSON o, KnownNat s) => Aeson.FromJSON (Event o s) where
+  parseJSON = Aeson.withObject "Event" $ \o -> do
+    dorc <- o .: "type"
+    cons <- case T.map C.toUpper dorc of
+      "DECREMENT" -> pure EventDecrement
+      "INCREMENT" -> pure EventIncrement
+      x           -> fail ("Unknown event type: " <> T.unpack x)
+    date <- o .: "date"
+    obj <- o .: "obj"
+    qty <- o .: "qty"
+    pure (cons date obj qty)
+
+
+instance (Aeson.ToJSON o, KnownNat s) => Aeson.ToJSON (Event o s) where
+  toJSON x = case x of
+    EventDecrement d o q -> Aeson.object ["type" .= ("DECREMENT" :: T.Text), "date" .= d, "obj" .= o, "qty" .= q]
+    EventIncrement d o q -> Aeson.object ["type" .= ("INCREMENT" :: T.Text), "date" .= d, "obj" .= o, "qty" .= q]
 
 
 eventDate :: (KnownNat s) => Event o s -> H.Date

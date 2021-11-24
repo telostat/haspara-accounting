@@ -14,12 +14,13 @@ extra-source-files:
 
 dependencies:
 - base >= 4.11 && < 5
-- haspara
-- hashable
 - aeson
-- text
-- refined
+- deriving-aeson
+- hashable
+- haspara
 - mtl
+- refined
+- text
 
 library:
   source-dirs:      src

@@ -21,6 +21,22 @@ data AccountKind =
 instance Hashable AccountKind
 
 
+-- | 'Aeson.FromJSON' instance for 'AccountKind'.
+--
+-- >>> Aeson.decode "\"Asset\"" :: Maybe AccountKind
+-- Just AccountKindAsset
+-- >>> Aeson.decode "\"aSSET\"" :: Maybe AccountKind
+-- Just AccountKindAsset
+-- >>> Aeson.decode "\"ASSET\"" :: Maybe AccountKind
+-- Just AccountKindAsset
+-- >>> Aeson.decode "\"LIABILITY\"" :: Maybe AccountKind
+-- Just AccountKindLiability
+-- >>> Aeson.decode "\"EQUITY\"" :: Maybe AccountKind
+-- Just AccountKindEquity
+-- >>> Aeson.decode "\"REVENUE\"" :: Maybe AccountKind
+-- Just AccountKindRevenue
+-- >>> Aeson.decode "\"EXPENSE\"" :: Maybe AccountKind
+-- Just AccountKindExpense
 instance Aeson.FromJSON AccountKind where
   parseJSON = Aeson.withText "AccountKind" $ \t -> case T.map C.toUpper t of
     "ASSET"     -> pure AccountKindAsset
@@ -29,6 +45,26 @@ instance Aeson.FromJSON AccountKind where
     "REVENUE"   -> pure AccountKindRevenue
     "EXPENSE"   -> pure AccountKindExpense
     _           -> fail $ "Unknown account kind: " <> show t
+
+
+-- | 'Aeson.ToJSON' instance for 'AccountKind'.
+--
+-- >>> Aeson.encode AccountKindAsset
+-- "\"ASSET\""
+-- >>> Aeson.encode AccountKindLiability
+-- "\"LIABILITY\""
+-- >>> Aeson.encode AccountKindEquity
+-- "\"EQUITY\""
+-- >>> Aeson.encode AccountKindRevenue
+-- "\"REVENUE\""
+-- >>> Aeson.encode AccountKindExpense
+-- "\"EXPENSE\""
+instance Aeson.ToJSON AccountKind where
+  toJSON AccountKindAsset     = Aeson.String "ASSET"
+  toJSON AccountKindLiability = Aeson.String "LIABILITY"
+  toJSON AccountKindEquity    = Aeson.String "EQUITY"
+  toJSON AccountKindRevenue   = Aeson.String "REVENUE"
+  toJSON AccountKindExpense   = Aeson.String "EXPENSE"
 
 
 accountKindText :: AccountKind -> T.Text
