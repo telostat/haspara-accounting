@@ -10,11 +10,11 @@ packages:
     git: https://github.com/telostat/haspara.git
     pantry-tree:
       size: 1560
-      sha256: c215a62857bd63bb16ed8af6f85a1cf19730a402bd7ca73075da24fac6165de0
-    commit: 31e55a582342f486e644a20bb92a28609a1c2d09
+      sha256: f5de71c266f231efbcead9e5caf2417f9ac96afe1a4e884a622d9c7f07949fb1
+    commit: f79ef34c090de16df9e13ee7e54f6412df1c8100
   original:
     git: https://github.com/telostat/haspara.git
-    commit: 31e55a582342f486e644a20bb92a28609a1c2d09
+    commit: f79ef34c090de16df9e13ee7e54f6412df1c8100
 snapshots:
 - completed:
     size: 586292
