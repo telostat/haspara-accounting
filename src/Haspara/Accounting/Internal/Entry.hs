@@ -11,7 +11,7 @@ import           GHC.TypeLits                            (KnownNat, Nat)
 import qualified Haspara                                 as H
 import           Haspara.Accounting.Internal.AccountKind (AccountKind(..))
 import           Haspara.Accounting.Internal.Event       (Event(..))
-import           Haspara.Accounting.Internal.Types       (PositiveQuantity)
+import           Haspara.Accounting.Internal.Types       (UnsignedQuantity)
 import           Refined                                 (unrefine)
 
 
@@ -21,7 +21,7 @@ import           Refined                                 (unrefine)
 -- >>> import Refined
 -- >>> let date = read "2021-01-01"
 -- >>> let oid = 1 :: Int
--- >>> let qty = $$(refineTH 42) :: PositiveQuantity 2
+-- >>> let qty = $$(refineTH 42) :: UnsignedQuantity 2
 -- >>> let entry = EntryDebit date oid qty
 -- >>> let json = Aeson.encode entry
 -- >>> json
@@ -31,8 +31,8 @@ import           Refined                                 (unrefine)
 -- >>> Aeson.decode json == Just entry
 -- True
 data Entry o (s :: Nat) =
-    EntryDebit H.Date o (PositiveQuantity s)
-  | EntryCredit H.Date o (PositiveQuantity s)
+    EntryDebit H.Date o (UnsignedQuantity s)
+  | EntryCredit H.Date o (UnsignedQuantity s)
   deriving (Eq, Ord, Show)
 
 
@@ -70,12 +70,12 @@ entryObject (EntryDebit _ o _)  = o
 entryObject (EntryCredit _ o _) = o
 
 
-entryDebit :: KnownNat s => Entry o s -> Maybe (PositiveQuantity s)
+entryDebit :: KnownNat s => Entry o s -> Maybe (UnsignedQuantity s)
 entryDebit (EntryDebit _ _ x) = Just x
 entryDebit EntryCredit {}     = Nothing
 
 
-entryCredit :: KnownNat s => Entry o s -> Maybe (PositiveQuantity s)
+entryCredit :: KnownNat s => Entry o s -> Maybe (UnsignedQuantity s)
 entryCredit EntryDebit {}       = Nothing
 entryCredit (EntryCredit _ _ x) = Just x
 

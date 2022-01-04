@@ -1,7 +1,7 @@
 module Haspara.Accounting.Internal.Types where
 
 import Haspara.Quantity (Quantity)
-import Refined          (Positive, Refined)
+import Refined          (NonNegative, Refined)
 
 
-type PositiveQuantity s = Refined Positive (Quantity s)
+type UnsignedQuantity s = Refined NonNegative (Quantity s)

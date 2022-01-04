@@ -24,7 +24,7 @@ import           Haspara.Accounting.Internal.Event   (Event, eventObject)
 -- >>> import qualified Data.List.NonEmpty as NE
 -- >>> let date = read "2021-01-01"
 -- >>> let oid = 1 :: Int
--- >>> let qty = $$(refineTH 42) :: PositiveQuantity 2
+-- >>> let qty = $$(refineTH 42) :: UnsignedQuantity 2
 -- >>> let event = EventDecrement date oid qty
 -- >>> let account = Account AccountKindAsset ("Cash" :: String, 1 ::Int)
 -- >>> let posting =  Posting . NE.fromList $ [(event, account)]

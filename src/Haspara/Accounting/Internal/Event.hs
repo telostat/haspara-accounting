@@ -11,7 +11,7 @@ import qualified Data.Char                         as C
 import qualified Data.Text                         as T
 import           GHC.TypeLits                      (KnownNat, Nat)
 import qualified Haspara                           as H
-import           Haspara.Accounting.Internal.Types (PositiveQuantity)
+import           Haspara.Accounting.Internal.Types (UnsignedQuantity)
 import           Refined                           (refine)
 
 
@@ -21,7 +21,7 @@ import           Refined                           (refine)
 -- >>> import Refined
 -- >>> let date = read "2021-01-01"
 -- >>> let oid = 1 :: Int
--- >>> let qty = $$(refineTH 42) :: PositiveQuantity 2
+-- >>> let qty = $$(refineTH 42) :: UnsignedQuantity 2
 -- >>> let event = EventDecrement date oid qty
 -- >>> let json = Aeson.encode event
 -- >>> json
@@ -31,8 +31,8 @@ import           Refined                           (refine)
 -- >>> Aeson.decode json == Just event
 -- True
 data Event o (s :: Nat) =
-    EventDecrement H.Date o (PositiveQuantity s)
-  | EventIncrement H.Date o (PositiveQuantity s)
+    EventDecrement H.Date o (UnsignedQuantity s)
+  | EventIncrement H.Date o (UnsignedQuantity s)
   deriving (Eq, Ord, Show)
 
 
@@ -72,6 +72,5 @@ negateEvent (EventIncrement d o x) = EventDecrement d o x
 
 mkEvent :: (MonadError String m, KnownNat s) => H.Date -> o -> H.Quantity s -> m (Event o s)
 mkEvent d o x
-  | x < 0 = either (throwError . show) pure $ EventDecrement d o <$> refine (abs x)
-  | x > 0 = either (throwError . show) pure $ EventIncrement d o <$> refine (abs x)
-  | otherwise = throwError "There is no event-type defined for zero values."
+  | x < 0     = either (throwError . show) pure $ EventDecrement d o <$> refine (abs x)
+  | otherwise = either (throwError . show) pure $ EventIncrement d o <$> refine (abs x)

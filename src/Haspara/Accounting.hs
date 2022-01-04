@@ -12,7 +12,7 @@ module Haspara.Accounting
   , Posting(..)
   , postingEvents
   , post
-  , PositiveQuantity
+  , UnsignedQuantity
   , Ledger(..)
   , LedgerItem(..)
   , mkLedger
@@ -39,4 +39,4 @@ import Haspara.Accounting.Internal.Entry
 import Haspara.Accounting.Internal.Event       (Event(..), eventDate, eventObject, mkEvent, negateEvent)
 import Haspara.Accounting.Internal.Ledger      (Ledger(..), LedgerItem(..), addEntry, mkLedger)
 import Haspara.Accounting.Internal.Posting     (Posting(..), post, postingEvents)
-import Haspara.Accounting.Internal.Types       (PositiveQuantity)
+import Haspara.Accounting.Internal.Types       (UnsignedQuantity)
