@@ -1,0 +1,73 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           haspara-accounting
+version:        0.0.0.0
+description:    Please see the README on GitHub at <https://github.com/telostat/haspara-accounting#readme>
+homepage:       https://github.com/telostat/haspara-accounting#readme
+bug-reports:    https://github.com/telostat/haspara-accounting/issues
+author:         Vehbi Sinan Tunalioglu
+maintainer:     vst@vsthost.com
+copyright:      Copyright (c) 2021 Telostat Pte Ltd
+license:        MIT
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/telostat/haspara-accounting
+
+library
+  exposed-modules:
+      Haspara.Accounting
+      Haspara.Accounting.Internal.Account
+      Haspara.Accounting.Internal.AccountKind
+      Haspara.Accounting.Internal.Entry
+      Haspara.Accounting.Internal.Event
+      Haspara.Accounting.Internal.Ledger
+      Haspara.Accounting.Internal.Posting
+      Haspara.Accounting.Internal.Types
+  other-modules:
+      Paths_haspara_accounting
+  hs-source-dirs:
+      src
+  default-extensions:
+      OverloadedStrings
+  ghc-options: -Wall
+  build-depends:
+      aeson
+    , base >=4.11 && <5
+    , deriving-aeson
+    , hashable
+    , haspara
+    , mtl
+    , refined
+    , text
+  default-language: Haskell2010
+
+test-suite haspara-accounting-doctest
+  type: exitcode-stdio-1.0
+  main-is: doctest.hs
+  other-modules:
+      Paths_haspara_accounting
+  hs-source-dirs:
+      test
+  ghc-options: -threaded
+  build-depends:
+      aeson
+    , base >=4.11 && <5
+    , deriving-aeson
+    , doctest
+    , hashable
+    , haspara
+    , haspara-accounting
+    , mtl
+    , refined
+    , text
+  default-language: Haskell2010
